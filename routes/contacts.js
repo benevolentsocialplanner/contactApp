@@ -1,0 +1,15 @@
+const express = require('express')
+const router = express.Router() 
+var bodyParser = require('body-parser')
+var jsonParser = bodyParser.json()
+//var urlencodedParser = bodyParser.urlencoded({ extended: false })
+const { verifyToken } = require('../controllers/users')
+const { addcontact,listById, deleteById,getAll,getByName,dashboard} = require('../controllers/contacts.js')
+
+router.get('/dashboard',verifyToken,dashboard)
+router.post('/addcontact',jsonParser,verifyToken, addcontact)
+router.post('/listById',jsonParser,verifyToken,listById)
+router.post ('/deleteById',jsonParser,verifyToken,deleteById)
+router.get('/getAll',verifyToken,getAll)
+router.post('/getByName',jsonParser,verifyToken,getByName)
+module.exports = router
