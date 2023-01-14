@@ -2,9 +2,11 @@ const mongoose = require('mongoose')
 const uuidv1 = require('uuid/v1')
 const Schema = mongoose.Schema 
 const validator = require('validator');
+const bcrypt = require("bcrypt")
 
 const userSchema = new Schema({
-    
+    user_id: Schema.Types.ObjectId,
+
     name: {
         type: String,
         required: true,
@@ -22,24 +24,18 @@ const userSchema = new Schema({
         type: String ,
         required: true
     },
-    contacts: Array,
-    status: {
-      type : String,
-      enum: ['on','off'],
-      default : 'off'
-    },
+   
     salt: String
     
 }, {timestamps: true})
 
 
-userSchema.pre(/^save/, function(next) { 
-
-    next()
-  })
-
-
-
+userSchema.methods.correctPassword = async function(
+    candidatePassword,
+    userPassword
+  ) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+  };
 
 userSchema.virtual('password')
     .set(function() {
@@ -54,7 +50,6 @@ userSchema.methods.toJSON = function(){ //hide password in json
 }
 
 userSchema.pre(/^find/, function(next) {
-   
     this.find({ active: { $ne: false } })
     next()
   })

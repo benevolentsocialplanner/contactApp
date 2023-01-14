@@ -4,6 +4,7 @@ const Schema = mongoose.Schema
 const User = require('../models/users')
 
 const contactSchema = new Schema({
+    contact_id: Schema.Types.ObjectId,
     name: {
         type: String,
         required: true,
@@ -18,6 +19,12 @@ const contactSchema = new Schema({
         minLength:5,
         maxLength:20
     },
+    userid:{
+      type: mongoose.Schema.ObjectId,
+      ref: 'User',
+      required: [true, 'Review must belong to a user']
+    }
+,
     salt: String
 }, {
     toJSON: {virtuals:true},
@@ -25,6 +32,15 @@ const contactSchema = new Schema({
 },{timestamps: true})
 
 
+
+contactSchema.pre(/^find/, function(next) {
+   
+    this.populate({
+      path: 'user',
+      select: 'id'
+    });
+    next();
+  });
 
 
 module.exports = mongoose.model("Contact", contactSchema)

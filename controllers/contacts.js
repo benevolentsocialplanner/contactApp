@@ -1,12 +1,10 @@
 const Contact = require('../models/contacts')
 const User = require('../models/users')
 const uuidv1 = require('uuid/v1')
-const contactProperty = []
 exports.addcontact = (req,res) => {
     
-    const name = req.body.name
+    const contactData = req.body
     const number = req.body.number
-    
     if(!(/^[0-9]+$/.test(number))){
         return res.json({
             message:"number must contain only numbers"
@@ -15,14 +13,10 @@ exports.addcontact = (req,res) => {
         //400
     }
     const contact = new Contact({
-        name: name,
-        number: number
+        ...contactData
     })
     
-    Contact.salt = uuidv1() 
-    contactProperty.push([contact])
-    User.contacts = contactProperty 
-    
+    Contact.salt = uuidv1()     
     contact.save()
         .then((contact) => {
             console.log(`new contact saved : ${contact}`)
@@ -35,7 +29,8 @@ exports.addcontact = (req,res) => {
 }
 exports.listById = (req,res) =>{
     const _id = req.body._id
-    Contact.findById(_id, (err,result)=>{
+    const userid = req.body.userid
+    Contact.findOne({userid: userid,_id:_id}, (err,result)=>{
         if(err){
             console.log(err.message)
             //400
@@ -48,48 +43,75 @@ exports.listById = (req,res) =>{
         console.log(`contact id: ${_id}, result: ${result}`)
     })
 }
-exports.dashboard = (req,res)=>{
-    console.log("dashboard")
-    res.send({message: "dashboard"})
-}
+
 exports.deleteById = (req,res) =>{
-    const _id = req.body._id
-    Contact.findByIdAndDelete(_id,(err,result)=>{
-        if(err){
-            console.log(err.message)
-            //400
-        }
-        if(!result){
-            console.log("no contact by that id was found")
-                
-            //404
-        }
-        console.log(` deleteByIdAndDelete result: ${result} `)
-    })
-}
-exports.getAll = (req,res) => {
-    
-    Contact.find({},(err,result)=>{
+
+    const userid = req.body.userid
+    Contact.find({userid : userid},(err,result)=>{
         if(err){
              console.log(err.message)
         }
         else{
-            /* res.send({
-                result
-            }) */
-            res.send(User.contacts)
+            
+                        const _id = req.body._id
+                    Contact.findByIdAndDelete(_id,(err,result)=>{
+                    if(err){
+                        console.log(err.message)
+                        //400
+                    }
+                    if(!result){
+                        console.log("no contact by that id was found")
+                            
+                        //404
+                    }
+                    console.log(` deleteByIdAndDelete result: ${result} `)
+                }) 
+
+        }
+    })
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+}
+exports.getAll = (req,res) => {
+    const userid = req.body.userid
+    Contact.find({userid : userid},(err,result)=>{
+        if(err){
+             console.log(err.message)
+        }
+        else{
+            
+            res.send(result)
            // console.log(`all users: ${result}`)
         }
     })
 }
 exports.getByName = (req,res) => {
-    const name = req.body.name
-    Contact.find({name}, (err,result)=>{
+    Contact.find({userid : userid},(err,result)=>{
         if(err){
-            console.log(err.message)
+             console.log(err.message)
         }
-        else{
-            console.log(`fetched by name : ${result}`)
+        else{     
+            const name = req.body.name
+            Contact.find({name}, (err,result)=>{
+                if(err){
+                    console.log(err.message)
+                }
+                else{
+                    console.log(`fetched by name : ${result}`)
+                }
+            })
         }
     })
     
