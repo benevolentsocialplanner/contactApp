@@ -14,12 +14,14 @@ require('dotenv').config();
 app.set('view engine','pug')
 app.set('views', path.join(__dirname, './views'))
 
-app.use(express.static(path.join(__dirname,'/views')))
-app.use(mongoSanitize());
+app.use(express.static(path.join(__dirname,'/public')))
 
-// Data sanitization against XSS
-app.use(xss());
-
+app.get('/', (req,res)=>{
+    res.status(200).render('base', {
+        "user":"user1",
+        "admin":"admin1"
+    });
+})
 
 //dbc
 mongoose.connect(process.env.DATABASE, {
