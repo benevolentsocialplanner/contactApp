@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 const express = require('express')
+const path = require('path');
 const app = express()
 
 const bodyParser = require('body-parser')
@@ -8,6 +9,14 @@ const cors = require('cors')
 const { cookie } = require('express-validator')
 
 require('dotenv').config();
+
+
+app.set('view engine','pug')
+app.set('views', path.join(__dirname, './views'))
+
+app.use(express.static(path.join(__dirname,'/views')))
+
+
 
 //dbc
 mongoose.connect(process.env.DATABASE, {
@@ -28,7 +37,6 @@ app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json()) // support json encoded bodies
 
-app.use(express.static("public"))
 
 
 //routes
