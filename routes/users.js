@@ -1,5 +1,4 @@
 const express = require('express')
-const { signup,signin,signout,verifyToken,getSignIn} = require('../controllers/users')
 const router = express.Router() 
 var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
