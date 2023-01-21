@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const express = require('express')
 const path = require('path');
 const app = express()
-
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
@@ -10,18 +9,10 @@ const { cookie } = require('express-validator')
 
 require('dotenv').config();
 
-
 app.set('view engine','pug')
 app.set('views', path.join(__dirname, './views'))
 
 app.use(express.static(path.join(__dirname,'/public')))
-
-app.get('/', (req,res)=>{
-    res.status(200).render('base', {
-        "user":"user1",
-        "admin":"admin1"
-    });
-})
 
 //dbc
 mongoose.connect(process.env.DATABASE, {
@@ -39,16 +30,23 @@ mongoose.connect(process.env.DATABASE, {
 
 app.use(cookieParser())
 app.use(cors())
-app.use(bodyParser.urlencoded({ extended: false }))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json()) // support json encoded bodies
 
+app.use((req, res, next) => {
+    req.requestTime = new Date().toISOString();
+    console.log(req.cookies);
+    next();
+  });
 
 
-//routes
+const viewRoutes = require('./routes/viewRoutes.js')
+app.use('/', viewRoutes);
 const userRoutes = require('./routes/users.js')
 app.use('/api',userRoutes)
 const contactRoutes = require('./routes/contacts.js')
 app.use('/contacts',contactRoutes)
+
 const port = process.env.PORT || 8000
 
 //SERVER SETUP
