@@ -105,11 +105,11 @@ exports.isLoggedIn = async (req, res, next) => {
         );
   
         // 2) Check if user still exists
-        const currentUser = await User.findById(decoded.id);
+        const currentUser = await User.findById(decoded._id);
         if (!currentUser) {
           return next();
         }
-  
+        
         // THERE IS A LOGGED IN USER
         res.locals.user = currentUser;
         return next();
