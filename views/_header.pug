@@ -2,6 +2,10 @@
 div.header
     img.logo(src='/img/favicon.png', alt='CompanyLogo')    
     div.header-right
-        a(href='/signup') SIGN UP
-        a(href='/api/signin') LOGIN
-        a(href='/api/signin') About
+        if !user
+            a(href='/signup') SIGN UP
+            a(href='/login') LOGIN
+            a(href='/api/signin') About
+        else
+            span.user-name= user.name
+            a(href='/api/signout') Sign out 
