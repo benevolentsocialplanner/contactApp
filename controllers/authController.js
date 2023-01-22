@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const AppError = require('../utils/appError')
 const User = require('../models/users.js')
+const { promisify } = require('util')
 const catchAsync = require ('../utils/catchAsync')
 const crypto = require('crypto')
 const bcrypt = require("bcrypt")
@@ -17,7 +18,7 @@ const createSendToken = (user, statusCode, req, res) => {
     const token = signToken(user._id);
   
     res.cookie('jwt', token, {
-      expires: new Date(Date.now() + (60 * 60 * 1000)),
+      expires: new Date(Date.now() + 8 * 3600000),
       httpOnly: true
     });
     res.status(statusCode).json({
@@ -29,6 +30,18 @@ const createSendToken = (user, statusCode, req, res) => {
     });
 };
 
+exports.login = catchAsync(async (req, res, next) => {
+    const { email, encry_password } = req.body;
+    
+    if (!email || !encry_password) {
+      return next(new AppError('Please provide email and password!', 400));
+    }
+    const user = await User.findOne({ email });
+    if (!user || !(await user.correctPassword(encry_password, user.encry_password))) {
+      return next(new AppError('Incorrect email or password', 401));
+    }  
+    createSendToken(user, 200, req, res);
+});
 exports.signup = catchAsync(async (req, res, next) => {
   var salt = bcrypt.genSaltSync(10);
   const name = req.body.name
@@ -55,20 +68,6 @@ exports.signup = catchAsync(async (req, res, next) => {
   })
      
 });
-
-exports.login = catchAsync(async (req, res, next) => {
-    const { email, encry_password } = req.body;
-  
-    if (!email || !encry_password) {
-      return next(new AppError('Please provide email and password!', 400));
-    }
-    const user = await User.findOne({ email });
-    if (!user || !(await user.correctPassword(encry_password, user.encry_password))) {
-      return next(new AppError('Incorrect email or password', 401));
-    }  
-    createSendToken(user, 200, req, res);
-});
-
 exports.logout = (req, res) => {
     res.cookie('jwt', 'loggedout', {
       expires: new Date(Date.now() + 1 * 1000),
@@ -95,14 +94,14 @@ exports.protect = catchAsync(async (req, res, next) => {
     }
   next();
 });
-
+//sayfalar icin no errors thrown
 exports.isLoggedIn = async (req, res, next) => {
     if (req.cookies.jwt) {
       try {
         // 1) verify token
         const decoded = await promisify(jwt.verify)(
           req.cookies.jwt,
-          process.env.JWT_SECRET
+          process.env.SECRET
         );
   
         // 2) Check if user still exists
