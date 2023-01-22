@@ -6,7 +6,8 @@ var bodyParser = require('body-parser')
 var jsonParser = bodyParser.json()
 
 
-router.get('/',jsonParser, viewsController.getDashboard)
-router.get('/api/signin',jsonParser, viewsController.getLoginForm)
+
+router.get('/',jsonParser, authController.isLoggedIn, viewsController.getDashboard)
+router.get('/login',jsonParser, authController.isLoggedIn, viewsController.getLoginForm)
 
 module.exports = router;
