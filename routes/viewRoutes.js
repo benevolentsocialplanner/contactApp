@@ -9,5 +9,5 @@ var jsonParser = bodyParser.json()
 
 router.get('/',jsonParser, authController.isLoggedIn, viewsController.getDashboard)
 router.get('/login',jsonParser, authController.isLoggedIn, viewsController.getLoginForm)
-
+// router.get('/signout',jsonParser, authController.isLoggedIn, viewsController.getDashboard)
 module.exports = router;
