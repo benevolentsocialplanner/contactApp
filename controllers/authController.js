@@ -18,7 +18,7 @@ const createSendToken = (user, statusCode, req, res) => {
     const token = signToken(user._id);
   
     res.cookie('jwt', token, {
-      expires: new Date(Date.now() + 8 * 3600000),
+      expires: new Date(Date.now() + 1 * 3600000),
       httpOnly: true
     });
     res.status(statusCode).json({
@@ -120,5 +120,3 @@ exports.isLoggedIn = async (req, res, next) => {
     }
     next();
 };
-
-
