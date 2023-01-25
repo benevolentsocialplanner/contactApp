@@ -32,6 +32,8 @@ mongoose.connect(process.env.DATABASE, {
     console.log('db connection failed')
     console.log(err)
 })
+app.use(mongoSanitize())
+app.use(xss())
 app.use(function(req, res, next) {
     res.header('Access-Control-Allow-Credentials', true);
     res.header('Access-Control-Allow-Origin',  '*');
