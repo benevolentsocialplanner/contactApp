@@ -70,19 +70,7 @@ exports.deleteById = (req,res) =>{
         }
     })
 
-
-
-
-
-
-
-
-
-
-
-
-
-    
+   
 }
 exports.getAll = (req,res) => {
     const userid = req.body.userid
